@@ -213,9 +213,28 @@ int is_solved(int * cube) {
             }
         }
     }
-
     return 1;
 }
+
+int solve_cube(int * cube, int depth) {
+    int result = 0;
+
+    if(is_solved(cube)) {
+        return 1;
+    }
+
+    else if(depth > 0) {
+        for(int i = 0; i < 6; i++) {
+            int cube_copy[54];
+            memcpy(cube_copy, cube, sizeof(int) * 54);
+            turn(i, cube_copy);
+            result = (result || solve_cube(cube_copy, depth - 1));
+        }
+    }
+
+    return result;
+}
+
 int main()
 {
     int cube[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -231,10 +250,18 @@ int main()
     clear_scramble(solve);
     clear_scramble(scramble);
 
-    int curr_scramble_length = create_scramble(cube, scramble);
-
+    //int curr_scramble_length = create_scramble(cube, scramble);
+    turn(1, cube);
     print_cube(cube);
-    print_scramble(curr_scramble_length, scramble);
+    //print_scramble(curr_scramble_length, scramble);
+    int max_depth = 15;
+    for(int i = 0; i < max_depth; i++) {
+        int result = solve_cube(cube, i);
+        if(result) {
+            printf("Cube solved with a depth of %d\n", i);
+            break;
+        }
+    }
 
     return 0;
 }
